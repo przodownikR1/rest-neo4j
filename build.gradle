@@ -1,0 +1,105 @@
+import java.lang.annotation.Target;
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'project-report'
+apply plugin: 'pmd'
+apply plugin: 'application'
+apply plugin: 'build-dashboard'
+apply plugin: 'codenarc'
+apply from: './properties.gradle'
+
+
+applicationDefaultJvmArgs = ["-Dfile.encoding=UTF=8"]
+libsDirName = './target'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-release-local/"}
+    maven { url "http://repo.spring.io/libs-milestone" }
+    maven { url "http://m2.neo4j.org" }
+}
+
+sourceSets {
+    intTest
+    main {
+        java { srcDir 'src/main/java' }
+        groovy { srcDir 'src/main/groovy' }
+        resources { srcDir 'src/main/resources' }
+    }
+    test {
+        java { srcDir 'src/test/java' }
+        groovy { srcDir 'src/test/groovy' }
+        resources { srcDir 'src/test/resources' }
+    }
+}
+    dependencies {
+        compile ("org.codehaus.groovy:groovy:${groovyVersion}")
+       
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-shell-remote")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.data:spring-data-neo4j:${springDataNeo4jVersion}")
+    compile("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
+    compile("org.springframework.data:spring-data-rest-webmvc:${springDataRestWebmvcVersion}")
+    compile ("org.springframework.data:spring-data-neo4j-rest:3.0.0.RELEASE")
+    compile ("org.springframework.data:spring-data-neo4j:3.0.0.RELEASE")
+    compile ("com.sun.jersey:jersey-bundle:1.18")
+    
+    compile("joda-time:joda-time:${jodaTimeVersion}")
+    compile("org.projectlombok:lombok:${lombokVersion}")
+    compile("com.google.guava:guava:${guavaVersion}")
+    
+    compile("com.codahale.metrics:metrics-core:${codahale}")
+    compile("com.codahale.metrics:metrics-graphite:${codahale}")
+    compile("com.codahale.metrics:metrics-jvm:${codahale}")
+    compile("com.codahale.metrics:metrics-servlet:${codahale}")
+    compile("com.codahale.metrics:metrics-servlets:${codahale}")
+    
+    compile("com.google.code.gson:gson:${gsonVersion}")
+    compile("org.yaml:snakeyaml:{snakeYamlVersion}")
+    
+     testCompile("org.hamcrest:hamcrest-all:$hamcrestVersion")
+     compile("org.mockito:mockito-all:$mockitoVersion")
+     testCompile("junit:junit:$junitVersion")
+     testCompile("org.easytesting:fest-assert:${festAssertVersion}")
+     testCompile("com.googlecode.catch-exception:catch-exception:1.2.0")
+     testCompile ("org.springframework:spring-test:${springVersion}")
+    
+       
+    }
+   
+    
+    configurations {
+        all {
+            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+            exclude group: "commons-logging"
+            exclude module: "slf4j-log4j12"
+            exclude module: "hibernate-jpa-2.0-api"
+        }
+    }
+    
+    jar {
+        baseName = 'agileProjectManagement'
+        version =  '0.0.1'
+    
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+        manifest {
+            attributes 'Implementation-Title': 'Gradle camel-cxf',
+            'Implementation-Version': version,
+            'Built-By': System.getProperty('user.name'),
+            'Built-Date': new Date(),
+            'Built-JDK': System.getProperty('java.version'),
+            'Built-Gradle': gradle.gradleVersion
+        }
+    }
+    
+    
+    task wrapper(type: Wrapper) { gradleVersion = '10.1' }
+    
+   
